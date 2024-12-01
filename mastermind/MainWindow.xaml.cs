@@ -1,4 +1,5 @@
-﻿using System.Reflection.Emit;
+﻿using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,7 +20,7 @@ namespace mastermind
     public partial class MainWindow : Window
     {
 
-
+        bool codeCracked = false;
 
 
         int attempts = 0;
@@ -91,8 +92,78 @@ namespace mastermind
 
 
 
+        private void StartAgain()
+        {
+            if(attempts == 10)
+            {
+                MessageBoxResult endGame = MessageBox.Show($"You failed! De corecte code was " + string.Join(", ", secretCode) + ".\nNog eens proberen?", "FAILED", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if(endGame == MessageBoxResult.Yes)
+                {
+                    secretCode.Clear();
+                    label1.Background = System.Windows.Media.Brushes.White;
+                    label1.BorderBrush = System.Windows.Media.Brushes.White;
+                    label2.Background = System.Windows.Media.Brushes.White;
+                    label2.BorderBrush = System.Windows.Media.Brushes.White;
+                    label3.Background = System.Windows.Media.Brushes.White;
+                    label3.BorderBrush = System.Windows.Media.Brushes.White;
+                    label4.Background = System.Windows.Media.Brushes.White;
+                    label4.BorderBrush = System.Windows.Media.Brushes.White;
+                    comboBox1.SelectedItem = -1;
+                    comboBox2.SelectedItem = -1;
+                    comboBox3.SelectedItem = -1;
+                    comboBox4.SelectedItem = -1;
+                    attemptsListBox.Items.Clear();
+                    GenerateRandomCode();
+                    secretCodeTextBox.Text = "Mastermind oplossing: " + string.Join(", ", secretCode);
+                    attempts = 0;
+                    playerScore = 100;
+                    playerScoreTextBox.Text = $"Score: {playerScore}/100";
+                    StartCountdown();
+                    this.Title = $"Mastermind - poging {attempts}/10";
+                    codeCracked = false;
 
+                }
+                else
+                {
+                    Application.Current.Shutdown();
+                }
+            }
+            if (codeCracked == true)
+            {
+                MessageBoxResult endGame = MessageBox.Show($"Code gekraakt in {attempts} pogingen.\nNog eens proberen?", "WON", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (endGame == MessageBoxResult.Yes)
+                {
+                    secretCode.Clear();
+                    label1.Background = System.Windows.Media.Brushes.White;
+                    label1.BorderBrush = System.Windows.Media.Brushes.White;
+                    label2.Background = System.Windows.Media.Brushes.White;
+                    label2.BorderBrush = System.Windows.Media.Brushes.White;
+                    label3.Background = System.Windows.Media.Brushes.White;
+                    label3.BorderBrush = System.Windows.Media.Brushes.White;
+                    label4.Background = System.Windows.Media.Brushes.White;
+                    label4.BorderBrush = System.Windows.Media.Brushes.White;
+                    comboBox1.SelectedItem = -1;
+                    comboBox2.SelectedItem = -1;
+                    comboBox3.SelectedItem = -1;
+                    comboBox4.SelectedItem = -1;
+                    attemptsListBox.Items.Clear();
+                    GenerateRandomCode();
+                    secretCodeTextBox.Text = "Mastermind oplossing: " + string.Join(", ", secretCode);
+                    attempts = 0;
+                    playerScore = 100;
+                    playerScoreTextBox.Text = $"Score: {playerScore}/100";
+                    StartCountdown();
+                    this.Title = $"Mastermind - poging {attempts}/10";
+                    codeCracked = false;
 
+                }
+                else
+                {
+                    Application.Current.Shutdown();
+                }
+            }
+
+        }
 
 
 
@@ -184,6 +255,7 @@ namespace mastermind
             {
                 StopCountdown(); // Timer stoppen als voorbeeld
                 timerLabel.Content = "EINDE SPEL!";
+                StartAgain();
             }
             else
             {
@@ -204,7 +276,14 @@ namespace mastermind
 
         private void UpdateCountdownLabel()
         {
-            timerLabel.Content = $"Tijd voor kans voorbij gaat: {_currentTime}/10 seconden";
+            if(attempts == 10)
+            {
+                timerLabel.Content = "EINDE SPEL!";
+            }
+            else
+            {
+                timerLabel.Content = $"Tijd voor kans voorbij gaat: {_currentTime}/10 seconden";
+            }
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -310,13 +389,7 @@ namespace mastermind
 
 
 
-
-
-
-
-
-        // Event handler voor de selectie van een kleur in de ComboBox
-        private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void CheckComboBoxChanges(object sender)
         {
             // Controleer welke ComboBox is geselecteerd en werk het juiste Label bij
             if (sender == comboBox1)
@@ -335,6 +408,16 @@ namespace mastermind
             {
                 UpdateLabelColor(label4, comboBox4.SelectedItem.ToString());
             }
+        }
+
+
+
+
+        // Event handler voor de selectie van een kleur in de ComboBox
+        private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            // Controleer welke ComboBox is geselecteerd en werk het juiste Label bij
+            CheckComboBoxChanges(sender);
         }
 
 
@@ -478,6 +561,18 @@ namespace mastermind
                         playerScoreTextBox.Text = $"Score: {playerScore}/100";
                     }
             }
+
+                if (attempts == 10)
+                {
+                    StartAgain();
+                    StopCountdown();
+                    _countdownTimer.Stop();
+                }
+                if (userInput.SequenceEqual(secretCode))
+                {
+                    codeCracked = true;
+                    StartAgain();
+                }
             }
             else
             {
