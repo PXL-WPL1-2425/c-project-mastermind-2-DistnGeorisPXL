@@ -39,6 +39,11 @@ namespace mastermind
 
 
 
+        //pogingen tellen van de speler
+        private List<string> playerAttempts = new List<string>();
+
+
+
 
 
         // Lijst voor de gegenereerde code
@@ -148,9 +153,14 @@ namespace mastermind
             // Verhoog de timer elke seconde
             _currentTime++;
             UpdateCountdownLabel();
+            if (attempts >= 10)
+            {
+                StopCountdown();
+                timerLabel.Content = "EINDE SPEL!";
+            }
 
-            // Controleer of de timer op 10 staat
-            if (_currentTime == 10)
+                // Controleer of de timer op 10 staat
+                if (_currentTime == 10)
             {
                 HandleTimerAtTen();
             }
@@ -173,7 +183,7 @@ namespace mastermind
             _countdownTimer.Stop(); // Timer stoppen als voorbeeld
             attempts++;
             this.Title = $"Mastermind - Poging: {attempts}/10";
-            if (attempts == 10)
+            if (attempts >= 10)
             {
                 StopCountdown(); // Timer stoppen als voorbeeld
                 timerLabel.Content = "EINDE SPEL!";
@@ -395,7 +405,6 @@ namespace mastermind
         {
             if(attempts < 10)
             {
-                StartCountdown();
 
 
 
@@ -419,14 +428,31 @@ namespace mastermind
                 MessageBox.Show("Selecteer een kleur voor alle vakken!");
                 return;
             }
+                else
+                {
+                    StartCountdown();
+                }
 
 
-            //voeg 1 poging toe aan de attempts
-            attempts++;
+
+                // Voeg poging toe aan de lijst
+                string attemptString = string.Join(", ", userInput);
+                playerAttempts.Add(attemptString);
+
+
+
+                // Update de ListBox
+                attemptsListBox.Items.Add($"Poging {attempts + 1}: {attemptString}");
+
+
+
+
+                //voeg 1 poging toe aan de attempts
+                attempts++;
 
 
             //weergeef het geupdaten attempt variabel
-            this.Title = $"Mastermind - ¨Poging: {attempts}/10";
+            this.Title = $"Mastermind - Poging: {attempts}/10";
 
 
 
@@ -454,6 +480,7 @@ namespace mastermind
             }
             else
             {
+                StopCountdown();
                 MessageBox.Show("Het spel is al beeindigd, U heeft maximum aantal kansen gebruikt.");
             }
         }
