@@ -25,6 +25,9 @@ namespace mastermind
         int attempts = 0;
 
 
+        int playerScore = 100;
+
+
 
 
 
@@ -136,12 +139,6 @@ namespace mastermind
             _countdownTimer.Stop(); // Timer stoppen
             UpdateCountdownLabel();
         }
-
-
-
-
-
-
 
 
 
@@ -471,11 +468,15 @@ namespace mastermind
                 else if (secretCode.Contains(userInput[i]))
                 {
                     SetLabelBorder(i, Colors.Wheat); // Witte rand voor correcte kleur maar verkeerde positie
-                }
+                        playerScore--;
+                        playerScoreTextBox.Text = $"Score: {playerScore}/100";
+                    }
                 else
                 {
                     SetLabelBorder(i, Colors.Transparent); // Geen rand als de kleur niet in de code zit
-                }
+                        playerScore -= 2;
+                        playerScoreTextBox.Text = $"Score: {playerScore}/100";
+                    }
             }
             }
             else
