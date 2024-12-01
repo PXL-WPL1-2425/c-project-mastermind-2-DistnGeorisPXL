@@ -470,7 +470,27 @@ namespace mastermind
 
 
 
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            base.OnClosing(e);
 
+            // Example: Show confirmation dialog
+            var result = MessageBox.Show("Weet je zeker dat je het spel wilt sluiten?",
+                                          "Bevestigen",
+                                          MessageBoxButton.YesNo,
+                                          MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.No)
+            {
+                // Cancel the closing
+                e.Cancel = true;
+            }
+            else
+            {
+                // Perform cleanup or save data
+                return;
+            }
+        }
 
 
 
